@@ -7,7 +7,7 @@ from esphome.const import (
     CONF_UPDATE_INTERVAL,
 )
 
-DEPENDENCIES = ["esp32"]
+DEPENDENCIES = ["esp32", "button", "number"]
 
 # control_button.cpp and control_number.cpp are compiled unconditionally, so the
 # button and number core components must be present even when a config uses
@@ -56,7 +56,7 @@ def validate_usb_config(config):
     if vendor_id is not None or product_id is not None:
         if vendor_id is None or product_id is None:
             raise cv.Invalid("When using manual USB IDs for troubleshooting, both vendor_id and product_id must be specified")
-        
+
         # Validate non-zero IDs
         if vendor_id == 0 or product_id == 0:
             raise cv.Invalid("USB vendor and product IDs must be non-zero")
@@ -107,12 +107,12 @@ def validate_update_interval(value):
 def validate_fallback_nominal_voltage(value):
     """Validate fallback nominal voltage for international compatibility."""
     value = cv.voltage(value)
-    
+
     if value < 80.0:
         raise cv.Invalid("Fallback nominal voltage must be at least 80V")
     if value > 300.0:
         raise cv.Invalid("Fallback nominal voltage must be at most 300V")
-    
+
     return value
 
 
@@ -145,13 +145,13 @@ async def to_code(config):
     await cg.register_component(var, config)
 
     cg.add(var.set_simulation_mode(config[CONF_SIMULATION_MODE]))
-    
+
     # USB IDs are now optional - only set if provided for troubleshooting
     if CONF_USB_VENDOR_ID in config:
         cg.add(var.set_usb_vendor_id(config[CONF_USB_VENDOR_ID]))
     if CONF_USB_PRODUCT_ID in config:
         cg.add(var.set_usb_product_id(config[CONF_USB_PRODUCT_ID]))
-    
+
     cg.add(var.set_protocol_timeout(config[CONF_PROTOCOL_TIMEOUT]))
     cg.add(var.set_protocol_selection(config[CONF_PROTOCOL]))
     cg.add(var.set_fallback_nominal_voltage(config[CONF_FALLBACK_NOMINAL_VOLTAGE]))

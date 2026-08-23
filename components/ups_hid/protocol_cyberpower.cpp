@@ -633,7 +633,7 @@ std::string CyberPowerProtocol::clean_firmware_string(const std::string &raw) {
 namespace esphome {
 namespace ups_hid {
 
-static std::unique_ptr<UpsProtocolBase> create_cyberpower_protocol(UpsHidComponent *parent) {
+std::unique_ptr<UpsProtocolBase> create_cyberpower_protocol(UpsHidComponent *parent) {
   return std::make_unique<CyberPowerProtocol>(parent);
 }
 
